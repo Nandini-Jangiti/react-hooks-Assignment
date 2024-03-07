@@ -1,25 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, createContext } from 'react';
+import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
+import LoginPage from './LoginPage';
+import Dashboard from './Dashboard';
 
-function App() {
+
+export const UserContext = createContext();
+
+const App = () => {
+  const [username, setUsername] = useState('');
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <UserContext.Provider value={{ username, setUsername }}>
+      <Router>
+        <div>
+          <Route path="/" exact component={LoginPage} />
+          <PrivateRoute path="/dashboard" component={Dashboard} />
+          
+        </div>
+      </Router>
+    </UserContext.Provider>
   );
-}
+};
+
+const PrivateRoute = ({ component: Component, ...rest }) => (
+  <Route {...rest} render={(props) => (
+    isLoggedIn()
+      ? <Component {...props} />
+      : <Redirect to='/' />
+  )} />
+);
+
+const isLoggedIn = () => {
+  // Check if user is logged in (you can implement your own logic here)
+  return true; // For demonstration, always assume the user is logged in
+};
 
 export default App;
